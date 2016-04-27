@@ -1,115 +1,40 @@
-#All color conversion calculations from easyrgb.com.
-from math import sqrt
 import numpy
+import sys
+import itertools
+from colormath.color_objects import LabColor, sRGBColor
+from colormath.color_diff import delta_e_cie2000
+from colormath.color_conversions import convert_color
 
 
+tail_weight = 30
+main_weight = 70
 
-def rgbtolab(rgb):
-  return xyztolab(rgbtoxyz(rgb))
+def get_color_combos(color_list, num_requested):
+    to_return = []
+    pair_list = permutations(color_list, 2)
+    possible_palettes = combinations(pair_list, num_requested)
+    for palette in possible_palettes:
+        palette_pairs = combinations(palette)
+        for pair in pallete_pairs:
+            palette_deltae += delta_e_cie2000(pair[0], pair[1])
+        palette_deltae /= palette_pairs.len()
+        if(palette_deltae > max_deltae)
+            max_deltae = palette_deltae
+            to_return = palette
+    return to_return
 
-#Assumes that each RGB component value is from 0-255.
-#Calculations assume 2degree observer angle and D65 illumination.
-def rgbtoxyz(rgb):
-    r = rgb[0]
-    g = rgb[1]
-    b = rgb[2]
+def avg_delta_e_2000(main1, tail1, main2, tail2):
+    rgb_main1 = sRGBColor(main1[0], main1[1], main1[2])
+    rgb_main2 = sRGBColor(main2[0], main2[1], main2[2])
+    rgb_tail1 = sRGBColor(tail1[0], tail1[1], tail1[2])
+    rgb_tail2 = sRGBColor(tail2[0], tail2[1], tail2[2])
 
-    r = r/255
-    g = g/255
-    b = b/255
+    lab_main1 = convert_color(rgb_main1, LabColor)
+    lab_main2 = convert_color(rgb_main2, LabColor)
+    lab_tail1 = convert_color(rgb_tail1, LabColor)
+    lab_tail2 = convert_color(rgb_tail2, LabColor)
 
-    if(r > 0.04045):
-        r = pow((r+0.055)/1.055, 2.4)
-    else:
-        r = r/12.92
-
-    if(g > 0.04045):
-        g = pow((g+0.055)/1.055, 2.4)
-    else:
-        g = g/12.92
-
-    if(b > 0.04045):
-        b = pow((b+0.055)/1.055, 2.4)
-    else:
-        b = b/12.92
-
-    r = r * 100
-    g = g * 100
-    b = b * 100
-
-    xyz = []
-    xyz.append(r * 0.4124 + g * 0.3576 + b * 0.1805)
-    xyz.append(r * 0.2126 + g * 0.7152 + b * 0.0722)
-    xyz.append(r * 0.0193 + g * 0.1192 + b * 0.9505)
-
-    return xyz
-
-#This conversion is from XYZ to CIE-L*ab, not Hunter-Lab.
-#Calculations assume 2degree observer angle and D65 illumination.
-def xyztolab(xyz):
-    xn= 95.047
-    yn= 100.000
-    zn= 108.883
-
-    x= xyz[0]
-    y= xyz[1]
-    z= xyz[2]
-
-    x= x/xn
-    y= y/yn
-    z= z/zn
-
-    if(x > 0.008856):
-        x = pow(x, 1/3)
-    else:
-        x = (7.787 * x) + (16 / 116)
-
-    if(y > 0.008856):
-        y = pow(y, 1/3)
-    else:
-        y = (7.787 * y) + (16 / 116)
-
-    if(z > 0.008856):
-        z = pow(z, 1/3)
-    else:
-        z = (7.787 * z) + (16 / 116)
-
-    lab = []
-    lab.append((116 * y) - 16)
-    lab.append(500 * (x-y))
-    lab.append(200 * (y-z))
-
-    return lab
-
-
-def deltae_1994(lab1, lab2):
-    l1 = lab1[0]
-    a1 = lab1[1]
-    b1 = lab1[2]
-
-    l2 = lab2[0]
-    a2 = lab2[1]
-    b2 = lab2[2]
-
-    k2 = 0.015
-    k1 = 0.045
-    k_h = 1
-    k_c = 1
-    k_l = 1
-    c2 = sqrt(pow(a2, 2) + pow(b2, 2))
-    c1 = sqrt(pow(a1, 2) + pow(b1, 2))
-    s_h = 1 + (k2 * c1)
-    s_c = 1 + (k1 * c1)
-    s_l = 1
-    d_b = b1 - b2
-    d_a = a1 - a2
-    d_c = c1 - c2
-    d_h = sqrt(pow(d_a, 2) + pow(d_b, 2) - pow(d_c, 2))
-    d_l = l1 - l2
-
-    f1 = d_l / (k_l * s_l)
-    f2 = d_c / (k_c * s_c)
-    f3 = d_h / (k_h * s_h)
-    delta_e = sqrt(pow(f1, 2) + pow(f2, 2) + pow(f3, 2))
-
-    return delta_e
+    main_deltae = delta_e_cie2000(lab_main1, lab_main2)
+    tail_deltae = delta_e_cie2000(lab_tail1, lab_tail2)
+    pair_deltae = numpy.array([main_deltae,  tail_deltae])
+    return numpy.average(pair_deltae, weights=[main_weight, tail_weight])
