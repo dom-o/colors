@@ -15,7 +15,7 @@ def get_color_combos(color_list, num_requested):
     possible_palettes = combinations(pair_list, num_requested)
     for palette in possible_palettes:
         palette_pairs = combinations(palette)
-        for pair in pallete_pairs:
+        for pair in palette_pairs:
             palette_deltae += delta_e_cie2000(pair[0], pair[1])
         palette_deltae /= palette_pairs.len()
         if(palette_deltae > max_deltae)
