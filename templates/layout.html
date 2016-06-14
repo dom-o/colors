@@ -324,9 +324,28 @@
       </tr>
     </table>
   </div>
-  <button id="palette_link">get palettes</button>
+  <button id="palette_link">get palette</button>
   <script type="text/javascript">
+    $(document).ready(function() {
 
+      function get_colors(elem)
+      {
+        var cell_colors = [];
+        $(elem).each(function() {
+          cell_colors.push($(this).css("background-color"));
+        });
+        return cell_colors
+      }
+
+      $("#palette_link").click(function () {
+        var color_list = get_colors("#palette_table td");
+        if(color_list.length < 2)
+        { alert("Add at least two colors"); }
+        else {
+          $.post("{{ url_for('show_palettes') }}",  $.param(color_list, true));
+        }
+      });
+    });
   </script>
   {% block body %}{% endblock %}
 <div>

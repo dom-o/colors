@@ -9,13 +9,13 @@ app.config.from_object(__name__)
 def show_colors():
   return render_template('layout.html')
 
-#@app.route('/palettes', methods=['POST'])
-#def show_palettes():
+@app.route('/palettes', methods=['POST'])
+def show_palettes():
 #   get colors here
-#    color_list = request.args
+    print(request.form)
 #   sanitize list (no duplicates, at least two colors)
 #   palette_pairs = get_color_combos(color_list, 6)
- #  return render_template('palettes.html', palette_pairs=palette_pairs)
+    return render_template('layout.html')#'palettes.html', palette_pairs=palette_pairs)
 
 if __name__ == "__main__":
   app.run()
