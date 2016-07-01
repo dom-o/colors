@@ -1,5 +1,9 @@
 {% extends "layout.html" %}
 {% block body %}
   {% for pair in pallete_pairs %}
+    
+  {% else %}
+    Looks like there was a problem getting your palette somewhere. Try again?
   {% endfor %}
+
 {% endblock %}
