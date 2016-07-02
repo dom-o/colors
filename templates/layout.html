@@ -2,8 +2,8 @@
 <title>Colors</title>
 <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
 <div class=page>
-  <h1>Colors</h1>
-  <div>
+  <div class="content">
+    <h1>Colors</h1>
     <table id="color_table">
       <tbody>
       	<tr>
@@ -107,43 +107,19 @@
       	</tr>
       </tbody>
     </table>
-  </div>
-  <div>
+
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
     <script type="text/javascript">
-      $(document).ready(function()
-      {
-        $("#color_table td").click(function()
-        {
-          var color = $(this).css("background-color");
-
-          $("#palette_table tr").prepend("<td title=\"Click to remove\"></td>");
-          $("#palette_table tr td:first").css("background-color", color);
-
-          if($("#palette_table tr td").length > 16)
-          {
-            $("#palette_table tr td:last").remove();
-          }
-        });
-
-        $("#palette_table").on("click", "td", function()
-        {
-          $(this).remove();
-        });
-      });
     </script>
     <table id="palette_table">
-      <tr>
-      </tr>
+      <tr></tr>
     </table>
+    <button id="palette_link">get palette</button>
+    <button id="clear">clear palette</button>
   </div>
-  <button id="palette_link">get palette</button>
-  <button id="clear">clear palette</button>
   <script type="text/javascript">
     $(document).ready(function() {
-
-      function get_colors(elem)
-      {
+      function get_colors(elem) {
         var cell_colors = [];
         $(elem).each(function() {
           cell_colors.push($(this).css("background-color"));
@@ -156,14 +132,30 @@
         if(color_list.length < 2)
         { alert("Add at least two colors"); }
         else {
-          $.post("{{ url_for('show_palettes') }}",  { 'color' : color_list });
+          $("#result").load("{{ url_for('show_palettes') }}",  { 'color' : color_list });
         }
       });
 
       $("#clear").click(function () {
         $("#palette_table tr").empty();
       });
+
+      $("#color_table td").click(function() {
+        var color = $(this).css("background-color");
+
+        $("#palette_table tr").prepend("<td title=\"Click to remove\"></td>");
+        $("#palette_table tr td:first").css("background-color", color);
+
+        if($("#palette_table tr td").length > 16)
+        {
+          $("#palette_table tr td:last").remove();
+        }
+      });
+
+      $("#palette_table").on("click", "td", function() {
+        $(this).remove();
+      });
     });
   </script>
-  {% block body %}{% endblock %}
-<div>
+  <div class="result"></div>
+</div>

@@ -1,9 +1,12 @@
-{% extends "layout.html" %}
-{% block body %}
-  {% for pair in pallete_pairs %}
-    
+<table>
+  {% for pair in palette_pairs %}
+    <tr>
+      <td style="background-color:{{ pair[0] }}"></td>
+      <td style="background-color:{{ pair[1] }}"></td>
+    </tr>
   {% else %}
-    Looks like there was a problem getting your palette somewhere. Try again?
+    <tr>
+      <td>Looks like there was a problem getting your palette somewhere. Try again?</td>
+    </tr>
   {% endfor %}
-
-{% endblock %}
+</table>

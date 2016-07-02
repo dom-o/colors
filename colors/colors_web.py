@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request
+from colors import get_color_combos
 
 DEBUG = True
 
@@ -24,8 +25,15 @@ def show_palettes():
         for c in raw_list
     ]
     if(len(color_list) >= 2):
-        #palette_pairs = get_color_combos(color_list, 6)
-    return render_template('layout.html')#'palettes.html', palette_pairs=palette_pairs)
+        raw_pairs = get_color_combos(color_list, 6)
+        palette_pairs = [
+            [   'rgb({0}, {1}, {2})'.format(p[0][0], p[0][1], p[0][2]),
+                'rgb({0}, {1}, {2})'.format(p[1][0], p[1][1], p[1][2])
+            ]
+            for p in raw_pairs
+        ]
+        print(palette_pairs)
+    return render_template('palettes.html', palette_pairs=palette_pairs)
 
 if __name__ == "__main__":
   app.run()

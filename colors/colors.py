@@ -1,6 +1,7 @@
 import numpy
 import sys
-import itertools
+from math import factorial
+from itertools import permutations, combinations
 from colormath.color_objects import LabColor, sRGBColor
 from colormath.color_diff import delta_e_cie2000
 from colormath.color_conversions import convert_color
@@ -10,14 +11,28 @@ tail_weight = 30
 main_weight = 70
 
 def get_color_combos(color_list, num_requested):
+    if len(color_list) < 2:
+        return null
+
     to_return = []
+    palette_deltae = 0
+    max_deltae = 0
+
     pair_list = permutations(color_list, 2)
+    p_list_len = factorial(len(color_list)) / factorial((len(color_list)-2))
+
+    if num_requested > p_list_len:
+        print(num_requested)
+        num_requested = int(p_list_len)
+
     possible_palettes = combinations(pair_list, num_requested)
+    poss_pal_len = factorial(p_list_len) / factorial(num_requested) / factorial(p_list_len-num_requested)
     for palette in possible_palettes:
-        palette_pairs = combinations(palette)
+        palette_pairs = combinations(palette, 2)
+        pal_pair_len = factorial(len(palette)) / factorial(2) / factorial(len(palette)-2)
         for pair in palette_pairs:
-            palette_deltae += delta_e_cie2000(pair[0], pair[1])
-        palette_deltae /= palette_pairs.len()
+            palette_deltae += avg_delta_e_2000(pair[0][0], pair[0][1], pair[1][0], pair[1][1])
+        palette_deltae /= pal_pair_len
         if(palette_deltae > max_deltae):
             max_deltae = palette_deltae
             to_return = palette
