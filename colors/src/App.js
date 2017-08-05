@@ -20,7 +20,6 @@ class App extends Component {
         super();
         this.handleClick = this.handleClick.bind(this);
         this.handleClearClick = this.handleClearClick.bind(this);
-        this.handleGetPairClick = this.handleGetPairClick.bind(this);
         this.state = {
             on: Array(0),
             combos: Array(0)
