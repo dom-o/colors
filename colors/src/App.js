@@ -5,16 +5,6 @@ import getColorCombos, {hex_to_rgb} from './colors';
 import logo from './logo.svg';
 import './App.css';
 
-    var cards = [
-    {squares:['#000','#FFF', '#abac44']}
-    ,
-    {squares:['#666']}
-    ,
-    {squares:['#999']}
-    ,
-];
-
-
 class App extends Component {
     constructor() {
         super();
@@ -75,10 +65,6 @@ class App extends Component {
             rgb = colors.map(hex_to_rgb);
 
             combos = getColorCombos(rgb, 6);
-            console.log('combos');
-            console.log(combos);
-            console.log('color list');
-            console.log(getColorList());
             this.setState({combos:combos});
         }        
     }
@@ -94,21 +80,14 @@ function getColorList() {
 }
 
 function arrToCards(arr) {
-    var cards=[], i, joined, squares=[], j;
-    console.log(arr);
-    for(i=0; i<arr.length; i++) {
-        for(j=0; j<arr[i].length; j++) {
-            console.log(arr[i][j])
-            joined= 'rgb('+arr[i][j].join(',')+')';
-            squares.push(joined);
-        }
-        
-        cards.push({squares:squares});
-    }
-    
-    console.log('arr to cards')
-    console.log(cards)
+    //arr = [[[r,g,b],[r,g,b]], [[r,g,b],[r,g,b]], [[r,g,b],[r,g,b]]]
+    var cards=[], colors=[];
+    cards = arr.map(function(card) {
+        colors = card.map(function(color) { return 'rgb('+color.join(',')+')'; });
+        return {squares: colors};
+    });
     return cards;
+    //cards = [{squares:['rgb', 'rgb']}, {squares:['rgb','rgb']}]
 }
 
 const CardGroup = (props) => {

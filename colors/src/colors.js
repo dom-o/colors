@@ -34,7 +34,6 @@ export default function getColorCombos(color_list, num_requested) {
     
     to_return = [pair];
     
-    //console.log(to_return);
     for(i = 0; i<num_requested-1; i++) {
         for(j=0; j<pair_list.length; j++) {
             compare = pair_list[j];
@@ -43,7 +42,7 @@ export default function getColorCombos(color_list, num_requested) {
                 avg_deltaE += pair_deltaE_2000(to_return[k][0], to_return[k][1], compare[0], compare[1], MAIN_WEIGHT, TAIL_WEIGHT);
             }
             avg_deltaE /= to_return.length;
-            console.log(avg_deltaE);
+            //console.log(avg_deltaE);
             
             if(avg_deltaE > max_avg_deltaE) {
                 max_avg_deltaE = avg_deltaE;
