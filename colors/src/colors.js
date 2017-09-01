@@ -1,6 +1,17 @@
 const MAIN_WEIGHT = 50;
 const TAIL_WEIGHT = 50;
 
+function arrCompare(a, b) {
+    var i;
+        
+        for(i=0; i<a.length && i<b.length;) {
+            if (a[i] === b[i]) i++;
+            else return a[i]-b[i];
+        }
+        
+        return 0;
+}
+
 export default function getColorCombos(color_list, num_requested) {
     if(color_list.length < 2) {
         return null;
@@ -12,20 +23,16 @@ export default function getColorCombos(color_list, num_requested) {
     var to_return = [], max_avg_deltaE = -1, furthest=-1, 
         pair_list, i, j, k, pair, compare, avg_deltaE=0;
     
+    //remove duplicate colors
     color_list = color_list.filter(function(color, index) {
         return color_list.indexOf(color) === index;
     });
-    //function just has to sort a pair of colors
-    pair_list = combinations(color_list, 2).sort(function(a,b) {
-        var i;
-        
-        for(i=0; i<a.length && i<b.length;) {
-            if (a[i] === b[i]) i++;
-            else return a[i]-b[i];
-        }
-        
-        return 0;
-    });
+    
+    //sort the arrays for consistency in results
+    color_list = color_list.sort(arrCompare);
+    //combinations vs. permutations: still not sure which way to go here. combinations ensure that a head/tail combo and its opposite won't both be recommended
+    pair_list = combinations(color_list, 2).sort(arrCompare);
+    
     if(num_requested >= pair_list.length) {
         return pair_list;
     }
@@ -38,10 +45,9 @@ export default function getColorCombos(color_list, num_requested) {
         for(j=0; j<pair_list.length; j++) {
             compare = pair_list[j];
             for(k=0; k<to_return.length; k++) {
-                
                 avg_deltaE += pair_deltaE_2000(to_return[k][0], to_return[k][1], compare[0], compare[1], MAIN_WEIGHT, TAIL_WEIGHT);
             }
-            avg_deltaE /= to_return.length;
+            //avg_deltaE /= to_return.length;
             //console.log(avg_deltaE);
             
             if(avg_deltaE > max_avg_deltaE) {

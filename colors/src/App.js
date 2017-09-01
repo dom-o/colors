@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import colorList from './color_data';
 import getColorCombos, {hex_to_rgb} from './colors';
 
-import logo from './logo.svg';
 import './App.css';
 
 class App extends Component {
@@ -18,21 +17,20 @@ class App extends Component {
     
   render() {
     return (
-      <div className="Colors">
+      <div className="App">
         <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Colors</h2>
+          <h1>Colors</h1>
+          <p className="App-intro">
+            picks the color pairs that look most different from each other
+          </p>
         </div>
-        <p className="App-intro">
-          Pick some colors; we'll find the most perceptually distant pairs.
-        </p>
-        <div className='container'>
+        <div className="Container">
             <CardGroup 
                 on={this.state.on}
                 clickFunction={this.handleClick} 
                 cards={getColorList()}
-                cardHeight={50}
-                cardWidth={45}
+                cardHeight={55}
+                cardWidth={55}
             />
             <button onClick={this.handleClearClick}>clear palette</button>
             <CardGroup on={[]} cards={arrToCards(this.state.combos)} cardWidth={70} cardHeight={80} />
@@ -129,7 +127,10 @@ class Card extends React.Component {
             width: this.props.width,
             height: this.props.height,
             margin: 5,
-            border: this.props.on ? 'solid' : 'none' 
+            boxSizing: 'border-box',
+            overflow: 'hidden',
+            border: this.props.on ? 'thin solid black' : 'thin solid black',
+            borderRadius: this.props.on ? '50% / 50%' : '5% / 5%'
         };
         return(
             <div style={cardStyle} onClick={this.handleClick}>
