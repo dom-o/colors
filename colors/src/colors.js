@@ -21,7 +21,7 @@ export default function getColorCombos(color_list, num_requested) {
     }
     
     var to_return = [], max_deltaE = -1, furthest=-1, 
-        pair_list, j, k, pair, compare, new_deltaE=0;
+        pair_list, j, k, pair, compare, color1, color2, new_deltaE=0;
     
     //remove duplicate colors
     color_list = color_list.filter(function(color, index) {
@@ -46,14 +46,18 @@ export default function getColorCombos(color_list, num_requested) {
             
             if(max_deltaE < new_deltaE) {
                 max_deltaE = new_deltaE;
-                furthest = [color1, color2];
+                pair = [color1, color2];
             }
             new_deltaE = 0;
         }
     }
     
-    to_return = [furthest[0], furthest[1]];
-    new_deltaE=0, max_deltaE=-1;
+    to_return = pair;
+    pair_list.splice(pair_list.indexOf(pair[0]), 1);
+    pair_list.splice(pair_list.indexOf(pair[1]), 1);
+    
+    new_deltaE=0;
+    max_deltaE=-1;
     
     while(to_return.length < num_requested) {
         for(j=0; j<pair_list.length; j++) {
