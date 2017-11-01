@@ -32,7 +32,7 @@ class App extends Component {
                 cardHeight={55}
                 cardWidth={55}
             />
-            <button onClick={this.handleClearClick}>clear palette</button>
+            <button onClick={this.handleClearClick}>clear</button>
             <CardGroup on={[]} cards={arrToCards(this.state.combos)} cardWidth={70} cardHeight={80} />
         </div>
       </div>
@@ -40,7 +40,7 @@ class App extends Component {
   }
   
     handleClearClick() {
-        this.setState({on: []});
+        this.setState({on: [], combos:[]});
     }
     
     handleClick(key) {
@@ -64,7 +64,10 @@ class App extends Component {
 
             combos = getColorCombos(rgb, 6);
             this.setState({combos:combos});
-        }        
+        }
+        else {
+            this.setState({combos:[]});
+        }
     }
 }
 
