@@ -20,8 +20,8 @@ export default function getColorCombos(color_list, num_requested) {
         return [color_list];
     }
     
-    var to_return = [], max_avg_deltaE = -1, furthest=-1, 
-        pair_list, i, j, k, pair, compare, avg_deltaE=0;
+    var to_return = [], max_deltaE = -1, furthest=-1, 
+        pair_list, j, k, pair, compare, new_deltaE=0;
     
     //remove duplicate colors
     color_list = color_list.filter(function(color, index) {
@@ -31,36 +31,49 @@ export default function getColorCombos(color_list, num_requested) {
     //sort the arrays for consistency in results
     color_list = color_list.sort(arrCompare);
     //combinations vs. permutations: still not sure which way to go here. combinations ensure that a head/tail combo and its opposite won't both be recommended
-    pair_list = combinations(color_list, 2).sort(arrCompare);
+    pair_list = combinations(color_list, 2);
     
     if(num_requested >= pair_list.length) {
         return pair_list;
     }
     
-    pair = pair_list.pop();
+    //find the 2 pairs that are furthest away from each other
+    for(j=0; j<pair_list.length; j++) {
+        color1 = pair_list[j];
+        for(k=j+1; k<pair_list.length; k++) {
+            color2 = pair_list[k];
+            new_deltaE = pair_deltaE_2000(color1[0], color1[1], color2[0], color2[1], MAIN_WEIGHT, TAIL_WEIGHT);
+            
+            if(max_deltaE < new_deltaE) {
+                max_deltaE = new_deltaE;
+                furthest = [color1, color2];
+            }
+            new_deltaE = 0;
+        }
+    }
     
-    to_return = [pair];
+    to_return = [furthest[0], furthest[1]];
+    new_deltaE=0, max_deltaE=-1;
     
-    for(i = 0; i<num_requested-1; i++) {
+    while(to_return.length < num_requested) {
         for(j=0; j<pair_list.length; j++) {
             compare = pair_list[j];
             for(k=0; k<to_return.length; k++) {
-                avg_deltaE += pair_deltaE_2000(to_return[k][0], to_return[k][1], compare[0], compare[1], MAIN_WEIGHT, TAIL_WEIGHT);
+                new_deltaE += pair_deltaE_2000(to_return[k][0], to_return[k][1], compare[0], compare[1], MAIN_WEIGHT, TAIL_WEIGHT);
             }
-            //avg_deltaE /= to_return.length;
-            //console.log(avg_deltaE);
             
-            if(avg_deltaE > max_avg_deltaE) {
-                max_avg_deltaE = avg_deltaE;
+            if(new_deltaE > max_deltaE) {
+                max_deltaE = new_deltaE;
                 furthest = compare;
             }
+            new_deltaE=0;
         }
         pair_list.splice(pair_list.indexOf(furthest), 1);
         to_return.push(furthest);
-        max_avg_deltaE = 0;
-        avg_deltaE=0;
-        //console.log(avg_deltaE_2000(to_return));
+        max_deltaE = 0;
     }
+    
+    
     return to_return;
 }
 
