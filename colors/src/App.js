@@ -21,7 +21,7 @@ class App extends Component {
         <div className="App-header">
           <h1>Colors</h1>
           <p className="App-intro">
-            picks the color pairs that look most different from each other
+            Picks the color pairs that look most different from each other.
           </p>
         </div>
         <div className="Container">
