@@ -1,0 +1,32 @@
+.card-group {
+  display: grid;
+  grid-template-columns: repeat(9, min-content);
+}
+
+.dark {
+  background-color: black;
+  color: white;
+}
+
+.light {
+  background-color: white;
+  color: black;
+}
+
+.card {
+  display: inline-block;
+  height: 55px;
+  margin: 5px;
+  box-sizing: border-box;
+  overflow: hidden;
+  border: thin solid black;
+  outline: thin solid white;
+}
+
+.square {
+  height: 55px;
+}
+
+.weight-slider {
+  display: block;
+}

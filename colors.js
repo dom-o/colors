@@ -2,87 +2,94 @@
 // const TAIL_WEIGHT = 50;
 
 function arrCompare(a, b) {
-    var i;
+  var i;
 
-        for(i=0; i<a.length && i<b.length;) {
-            if (a[i] === b[i]) i++;
-            else return a[i]-b[i];
-        }
+  for(i=0; i<a.length && i<b.length;) {
+    if (a[i] === b[i]) i++;
+    else return a[i]-b[i];
+  }
 
-        return 0;
+  return 0;
 }
 
-export default function getColorCombos(color_list, num_requested, main_weight, tail_weight) {
-    if(color_list.length < 2) {
-        return null;
+function getColorCombos(color_list, num_requested, group_size, weights) {
+  if(color_list.length < group_size) {
+    return null
+  }
+  // if (color_list.length === group_size) {
+  //   console.log('yup')
+  //   return [color_list]
+  // }
+
+  //we're not removing duplicates, because we're going to just expect there shouldn't be any
+  // //remove duplicate colors
+  // color_list = color_list.filter(function(color, index) {
+  //     return color_list.indexOf(color) === index;
+  // });
+
+  //sort the arrays for consistency in results
+  color_list = color_list.sort(arrCompare);
+  combo_list = permutations(color_list, group_size);
+  if(num_requested >= combo_list.length) {
+      return combo_list;
+  }
+
+  //this is supposed to approximate choosing a random item from the list with consistency. i figured it was easier this way than making a seeded random number generator.
+  to_return = combo_list.splice(951 % combo_list.length, 1)
+
+  while(to_return.length < num_requested) {
+    var furthest, furthest_index
+    let max_deltaE=0
+
+    for(let j=0; j<combo_list.length; j++) {
+      compare = combo_list[j];
+      new_deltaE = group_deltaE_2000(to_return[0], compare, weights)
+      for(let k=1; k<to_return.length; k++) {
+        new_deltaE = Math.min(group_deltaE_2000(to_return[k], compare, weights), new_deltaE);
+      }
+      if(new_deltaE > max_deltaE) {
+        max_deltaE = new_deltaE;
+        furthest = compare;
+        furthest_index = j
+      }
     }
-    if(color_list.length === 2) {
-        return [color_list];
+    combo_list.splice(furthest_index, 1);
+    to_return.push(furthest);
+    max_deltaE = 0;
+  }
+  return to_return
+}
+
+function group_deltaE_2000(group1, group2, weights) {
+    const summed_weights = weights.reduce((acc,curr) => acc+curr)
+    const lab_group1 = group1.map(color => srgb_to_lab(color))
+    const lab_group2 = group2.map(color => srgb_to_lab(color))
+    let avg_deltaE = 0
+
+    for(let i=0; i<lab_group1.length && i<lab_group2.length; i++) {
+      avg_deltaE += deltaE_2000(lab_group1[i], lab_group2[i]) * weights[i]
     }
+    avg_deltaE /= summed_weights
 
-    var to_return = [], max_deltaE = -1, furthest=-1,
-        pair_list, j, k, pair, compare, color1, color2, new_deltaE=0;
+    return avg_deltaE;
+}
 
-    //remove duplicate colors
-    color_list = color_list.filter(function(color, index) {
-        return color_list.indexOf(color) === index;
-    });
+function pair_deltaE_2000(main1, tail1, main2, tail2, main_weight, tail_weight) {
+    var colors, main_deltaE, tail_deltaE, avg_deltaE;
 
-    //sort the arrays for consistency in results
-    color_list = color_list.sort(arrCompare);
-    //combinations vs. permutations: still not sure which way to go here. combinations ensure that a head/tail combo and its opposite won't both be recommended
-    pair_list = combinations(color_list, 2);
+    colors = [main1, main2, tail1, tail2].map( color => srgb_to_lab(color));
+    // main_weight /= 100;
+    // tail_weight /= 100;
 
-    if(num_requested >= pair_list.length) {
-        return pair_list;
-    }
+    main_deltaE = deltaE_2000(colors[0], colors[1]);
+    tail_deltaE = deltaE_2000(colors[2], colors[3]);
+    avg_deltaE = ((main_deltaE*main_weight) + (tail_deltaE*tail_weight)) / (main_weight + tail_weight);
 
-    //find the 2 pairs that are furthest away from each other
-    for(j=0; j<pair_list.length; j++) {
-        color1 = pair_list[j];
-        for(k=j+1; k<pair_list.length; k++) {
-            color2 = pair_list[k];
-            new_deltaE = pair_deltaE_2000(color1[0], color1[1], color2[0], color2[1], main_weight, tail_weight);
-
-            if(max_deltaE < new_deltaE) {
-                max_deltaE = new_deltaE;
-                pair = [color1, color2];
-            }
-            new_deltaE = 0;
-        }
-    }
-
-    to_return = pair;
-    pair_list.splice(pair_list.indexOf(pair[0]), 1);
-    pair_list.splice(pair_list.indexOf(pair[1]), 1);
-
-    new_deltaE=0;
-    max_deltaE=-1;
-
-    while(to_return.length < num_requested) {
-        for(j=0; j<pair_list.length; j++) {
-            compare = pair_list[j];
-            for(k=0; k<to_return.length; k++) {
-                new_deltaE += pair_deltaE_2000(to_return[k][0], to_return[k][1], compare[0], compare[1], main_weight, tail_weight);
-            }
-
-            if(new_deltaE > max_deltaE) {
-                max_deltaE = new_deltaE;
-                furthest = compare;
-            }
-            new_deltaE=0;
-        }
-        pair_list.splice(pair_list.indexOf(furthest), 1);
-        to_return.push(furthest);
-        max_deltaE = 0;
-    }
-
-
-    return to_return;
+    return avg_deltaE;
 }
 
 //taken from https://stackoverflow.com/questions/21646738/convert-hex-to-rgba
-export function hex_to_rgb(hex) {
+function hex_to_rgb(hex) {
     var r,g,b,c;
 
     if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
@@ -101,24 +108,24 @@ export function hex_to_rgb(hex) {
 }
 
 //taken from https://gist.github.com/axelpale/3118596
-export function combinations(list, chunk_size) {
-    var combs, start, sub_combs, i, j;
+function combinations(list, chunk_size) {
+  var combs, start, sub_combs, i, j;
 
-    if(chunk_size > list.length || chunk_size <= 0) {
-        return [];
-    }
+  if(chunk_size > list.length || chunk_size <= 0) {
+      return [];
+  }
 
-    if(chunk_size === list.length) {
-        return list;
-    }
+  if(chunk_size === list.length) {
+      return list;
+  }
 
-    if(chunk_size === 1) {
-        combs = [];
-        for(i=0; i<list.length; i++) {
-            combs.push(list[i]);
-        }
-        return combs;
-    }
+  if(chunk_size === 1) {
+      combs = [];
+      for(i=0; i<list.length; i++) {
+          combs.push(list[i]);
+      }
+      return combs;
+  }
 
     combs=[];
     for(i=0; i<list.length-chunk_size+1; i++) {
@@ -131,23 +138,34 @@ export function combinations(list, chunk_size) {
     return combs;
 }
 
-function pair_deltaE_2000(main1, tail1, main2, tail2, main_weight, tail_weight) {
-    var colors, main_deltaE, tail_deltaE, avg_deltaE;
+function permutations(list, chunk_size) {
+  var perms, start, sub_perms, i, j;
+  if(chunk_size > list.length || chunk_size <= 0) {
+    return [];
+  }
 
-    colors = [main1, main2, tail1, tail2].map( color => srgb_to_lab(color));
-    main_weight /= 100;
-    tail_weight /= 100;
+  if(chunk_size === 1) {
+    perms = [];
+    for(i=0; i<list.length; i++) {
+      perms.push([list[i]]);
+    }
+    return perms;
+  }
 
-    main_deltaE = deltaE_2000(colors[0], colors[1]);
-    tail_deltaE = deltaE_2000(colors[2], colors[3]);
-    avg_deltaE = ((main_deltaE*main_weight) + (tail_deltaE*tail_weight)) / (main_weight + tail_weight);
-
-    return avg_deltaE;
+  perms=[];
+  for(i=0; i<list.length; i++) {
+    start = list.slice(i, i+1);
+    sub_perms = permutations(list.slice(0,i).concat(list.slice(i+1)), chunk_size-1);
+    for(j=0; j<sub_perms.length; j++) {
+      perms.push(start.concat(sub_perms[j]));
+    }
+  }
+  return perms;
 }
 
 //http://www.brucelindbloom.com/index.html?Eqn_DeltaE_CIE2000.html
 //referenced https://github.com/signalwerk/colorlab/blob/master/src/CIEDE2000.js
-export function deltaE_2000(color1, color2) {
+function deltaE_2000(color1, color2) {
     var sqrt, sin, pow, atan2, cos, abs, exp, l1, a1, b1, l2, a2, b2, lBarPrime, c1, c2, cBar, g, a1Prime, a2Prime, c1Prime, c2Prime, cBarPrime, h1Prime, h1PrimeTerm, h2Prime, h2PrimeTerm, hBarPrime, deltaHPrime, deltaHPrimeTerm, deltaLPrime, deltaCPrime, deltaBigHPrime, sL, sC, sH, t, deltaTheta, rC, rT, kL, kC, kH;
 
     sqrt = Math.sqrt;
@@ -231,12 +249,12 @@ function toDegrees(radians) {
     return radians * 180/Math.PI;
 }
 
-export function srgb_to_lab(rgb) {
+function srgb_to_lab(rgb) {
     return xyz_to_lab(srgb_to_xyz(rgb));
 }
 
 //https://en.wikipedia.org/wiki/Lab_color_space#Forward_transformation
-export function xyz_to_lab(xyz) {
+function xyz_to_lab(xyz) {
     var l,a,b, xn,yn,zn, x,y,z;
     x= xyz[0];
     y= xyz[1];
@@ -259,7 +277,7 @@ function f (t) {
 }
 
 //https://en.wikipedia.org/wiki/SRGB#The_reverse_transformation
-export function srgb_to_xyz(rgb) {
+function srgb_to_xyz(rgb) {
     var x,y,z, r,g,b;
     r= rgb[0] / 255;
     g= rgb[1] / 255;
