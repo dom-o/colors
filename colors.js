@@ -9,9 +9,10 @@ function getColorCombos(color_list, num_requested, group_size, weights) {
   //     return color_list.indexOf(color) === index;
   // });
 
-  var combo_list = permutations(color_list.length, group_size);
+  var combo_list
   const combo_list_length = factorial(color_list.length) / factorial(color_list.length - group_size)
   if(num_requested >= combo_list_length) {
+    combo_list = permutations(color_list.length, group_size);
     arr = []
     for (combo of combo_list) {
       arr.push(combo)
@@ -19,11 +20,13 @@ function getColorCombos(color_list, num_requested, group_size, weights) {
     return arr
   }
 
-  const min = Math.ceil(0)
-  const max = Math.floor(combo_list_length)
-  const rand = Math.floor(Math.random() * (max - min) + min)
-  for(var i=0;i<rand;i++) { combo_list.next() }
-  const to_return = [combo_list.next().value.map(x => color_list[x])]
+  for(var i=color_list.length-1; i>=color_list.length-group_size; i--) {
+    const r = Math.floor(Math.random() * (i+1))
+    const t = color_list[i]
+    color_list[i] = color_list[r]
+    color_list[r] = t
+  }
+  const to_return = [color_list.slice(color_list.length-group_size)]
 
   while(to_return.length < num_requested) {
     var furthest, combo
@@ -33,7 +36,7 @@ function getColorCombos(color_list, num_requested, group_size, weights) {
     for(const el of combo_list) {
       combo = el.map(x => color_list[x])
       if(!to_return_includes_combo(combo, to_return)) {
-        let new_deltaE = group_deltaE_2000(to_return[0], combo, weights)
+        var new_deltaE = group_deltaE_2000(to_return[0], combo, weights)
         for(var k=1; k<to_return.length; k++) {
           new_deltaE = Math.min(group_deltaE_2000(to_return[k], combo, weights), new_deltaE);
         }
