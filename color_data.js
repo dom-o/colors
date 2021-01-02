@@ -1,4 +1,4 @@
-const color_list= [
+const hex_list= [
   "#FFFFFF",
   "#000000",
   "#333333",

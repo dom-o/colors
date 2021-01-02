@@ -4,8 +4,8 @@ function genColorTable() {
   const color_table = document.getElementById('color-table')
 
   let color_table_html = ''
-  for(let i=0; i<color_list.length; i++) {
-    const color = color_list[i]
+  for(let i=0; i<hex_list.length; i++) {
+    const color = hex_list[i]
     color_table_html +=
       '<label class="card" id="'+i+'" for="check'+i+'" style="background-color:'+color+';">' +
         '<input id="check'+i+'" class="color-check" type="checkbox">'+
@@ -70,7 +70,7 @@ function calculate() {
     document.getElementById('combos').innerHTML = 'You want color groups of size ' + weights_quantity + ", but you've picked "+on.length+(on.length!=1 ? ' colors.' : ' color.')+' Pick '+(weights_quantity-on.length)+' more.'
     return
   }
-  const rgb = on.map(a => color_list[a]).map(hex_to_rgb)
+  // const rgb = on.map(a => color_list[a]).map(color => srgb_to_lab(hex_to_rgb(color)))
   const num_requested = parseInt(document.getElementById('num-requested').value, 10)
 
   const weights = []
@@ -83,9 +83,9 @@ function calculate() {
     }
   }
 
-  var combos = getColorCombos(rgb, num_requested, weights_quantity, weights)
+  var combos = getColorCombos(on, num_requested, weights_quantity, weights)
   if(combos) {
-    combos = combos.map(combo => combo.map(color => 'rgb('+color.join(',')+')'))
+    combos = combos.map(combo => combo.map(color => 'rgb('+color.rgb.join(',')+')'))
     const combo_table = document.getElementById('combos')
     let combos_html = '<div class="card-group">'
     for(let i=0; i<combos.length; i++) {
