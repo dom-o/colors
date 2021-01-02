@@ -1,6 +1,3 @@
-// const MAIN_WEIGHT = 50;
-// const TAIL_WEIGHT = 50;
-
 function arrCompare(a, b) {
   var i;
 
@@ -16,10 +13,6 @@ function getColorCombos(color_list, num_requested, group_size, weights) {
   if(color_list.length < group_size) {
     return null
   }
-  // if (color_list.length === group_size) {
-  //   console.log('yup')
-  //   return [color_list]
-  // }
 
   //we're not removing duplicates, because we're going to just expect there shouldn't be any
   // //remove duplicate colors
@@ -27,65 +20,79 @@ function getColorCombos(color_list, num_requested, group_size, weights) {
   //     return color_list.indexOf(color) === index;
   // });
 
-  //sort the arrays for consistency in results
-  color_list = color_list.sort(arrCompare);
-  combo_list = permutations(color_list, group_size);
-  if(num_requested >= combo_list.length) {
-      return combo_list;
+  var combo_list = permutationsNew(color_list.length, group_size);
+  const combo_list_length = factorial(color_list.length) / factorial(color_list.length - group_size)
+  if(num_requested >= combo_list_length) {
+    arr = []
+    for (combo of combo_list) {
+      arr.push(combo)
+    }
+    return arr
   }
 
-  //this is supposed to approximate choosing a random item from the list with consistency. i figured it was easier this way than making a seeded random number generator.
-  to_return = combo_list.splice(951 % combo_list.length, 1)
+  const min = Math.ceil(0)
+  const max = Math.floor(combo_list_length)
+  const rand = Math.floor(Math.random() * (max - min) + min)
+  for(var i=0;i<rand;i++) {
+    combo_list.next()
+  }
+  const to_return = [combo_list.next().value.map(x => color_list[x])]
+  const to_ignore = [to_return[0]]
 
   while(to_return.length < num_requested) {
-    var furthest, furthest_index
+    var furthest, combo
     let max_deltaE=0
 
-    for(let j=0; j<combo_list.length; j++) {
-      compare = combo_list[j];
-      new_deltaE = group_deltaE_2000(to_return[0], compare, weights)
-      for(let k=1; k<to_return.length; k++) {
-        new_deltaE = Math.min(group_deltaE_2000(to_return[k], compare, weights), new_deltaE);
-      }
-      if(new_deltaE > max_deltaE) {
-        max_deltaE = new_deltaE;
-        furthest = compare;
-        furthest_index = j
+    combo_list = permutationsNew(color_list.length, group_size)
+    for(el of combo_list) {
+      combo = el.map(x => color_list[x])
+      if(!to_ignore_includes_combo(combo, to_ignore)) {
+        let new_deltaE = group_deltaE_2000(to_return[0], combo, weights)
+        for(var k=1; k<to_return.length; k++) {
+          new_deltaE = Math.min(group_deltaE_2000(to_return[k], combo, weights), new_deltaE);
+        }
+        if(new_deltaE > max_deltaE) {
+          max_deltaE = new_deltaE;
+          furthest = combo;
+        }
       }
     }
-    combo_list.splice(furthest_index, 1);
+    to_ignore.push(furthest)
     to_return.push(furthest);
     max_deltaE = 0;
   }
   return to_return
 }
 
-function group_deltaE_2000(group1, group2, weights) {
-    const summed_weights = weights.reduce((acc,curr) => acc+curr)
-    const lab_group1 = group1.map(color => srgb_to_lab(color))
-    const lab_group2 = group2.map(color => srgb_to_lab(color))
-    let avg_deltaE = 0
-
-    for(let i=0; i<lab_group1.length && i<lab_group2.length; i++) {
-      avg_deltaE += deltaE_2000(lab_group1[i], lab_group2[i]) * weights[i]
+function to_ignore_includes_combo(combo, to_ignore) {
+  var found;
+  for(compare of to_ignore) {
+    if(compare.length === combo.length) {
+      found = true
+      for(var i=0; i<compare.length; i++) {
+        if(compare[i] !== combo[i]) {
+          found = false
+          break
+        }
+      }
+      if(found) { return true }
     }
-    avg_deltaE /= summed_weights
-
-    return avg_deltaE;
+  }
+  return false
 }
 
-function pair_deltaE_2000(main1, tail1, main2, tail2, main_weight, tail_weight) {
-    var colors, main_deltaE, tail_deltaE, avg_deltaE;
+function group_deltaE_2000(group1, group2, weights) {
+  const summed_weights = weights.reduce((acc,curr) => acc+curr)
+  const lab_group1 = group1.map(color => srgb_to_lab(color))
+  const lab_group2 = group2.map(color => srgb_to_lab(color))
+  let avg_deltaE = 0
 
-    colors = [main1, main2, tail1, tail2].map( color => srgb_to_lab(color));
-    // main_weight /= 100;
-    // tail_weight /= 100;
+  for(let i=0; i<lab_group1.length && i<lab_group2.length; i++) {
+    avg_deltaE += deltaE_2000(lab_group1[i], lab_group2[i]) * weights[i]
+  }
+  avg_deltaE /= summed_weights
 
-    main_deltaE = deltaE_2000(colors[0], colors[1]);
-    tail_deltaE = deltaE_2000(colors[2], colors[3]);
-    avg_deltaE = ((main_deltaE*main_weight) + (tail_deltaE*tail_weight)) / (main_weight + tail_weight);
-
-    return avg_deltaE;
+  return avg_deltaE;
 }
 
 //taken from https://stackoverflow.com/questions/21646738/convert-hex-to-rgba
@@ -138,29 +145,81 @@ function combinations(list, chunk_size) {
     return combs;
 }
 
-function permutations(list, chunk_size) {
-  var perms, start, sub_perms, i, j;
-  if(chunk_size > list.length || chunk_size <= 0) {
-    return [];
-  }
-
-  if(chunk_size === 1) {
-    perms = [];
-    for(i=0; i<list.length; i++) {
-      perms.push([list[i]]);
+function factorial(n) {
+  let k = 1
+  if(n==0 || n==1) {
+    return 1
+  } else {
+    while(n>0) {
+      k *= n
+      n--
     }
-    return perms;
+    return k
   }
+}
 
-  perms=[];
-  for(i=0; i<list.length; i++) {
-    start = list.slice(i, i+1);
-    sub_perms = permutations(list.slice(0,i).concat(list.slice(i+1)), chunk_size-1);
-    for(j=0; j<sub_perms.length; j++) {
-      perms.push(start.concat(sub_perms[j]));
+// https://alistairisrael.wordpress.com/2009/09/22/simple-efficient-pnk-algorithm/
+function* permutations(n/**list_length**/, k/**chunk_size**/) {
+  // https://stackoverflow.com/questions/3895478/does-javascript-have-a-method-like-range-to-generate-a-range-within-the-supp
+  const a = [...Array(n).keys()]
+  yield a.slice(0,k)
+  const edge = k - 1
+
+  while (true) {
+    let j = k
+    while(j < n && a[edge] >= a[j]) {
+      j++
     }
+
+    var t,u,v
+    if(j<n) {
+      t = a[edge]
+      a[edge] = a[j]
+      a[j] = t
+    } else {
+      u=k
+      v=n-1
+      while(u<v) { //reverse from k to n-1
+        t = a[u]
+        a[u] = a[v]
+        a[v] = t
+
+        u++
+        v--
+      }
+
+      let i = edge -1
+      while(i >= 0 && a[i] >= a[i+1]) {
+        i--
+      }
+
+      if (i<0) {
+        //done
+        return
+      }
+
+      j = n-1
+      while( j > i && a[i] >= a[j]) {
+        j--
+      }
+
+      t = a[i]
+      a[i] = a[j]
+      a[j] = t
+
+      u=i+1
+      v=n-1
+      while(u<v) { //reverse from i+1 to n-1
+        t = a[u]
+        a[u] = a[v]
+        a[v] = t
+
+        u++
+        v--
+      }
+    }
+    yield a.slice(0, k);
   }
-  return perms;
 }
 
 //http://www.brucelindbloom.com/index.html?Eqn_DeltaE_CIE2000.html
