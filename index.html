@@ -7,14 +7,13 @@
   <script defer src="main.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="light">
+<body class="dark">
   <h1>Colors</h1>
   <p>This is a tool for finding distinct colors/groups of colors.</p>
-  <div>
     <label for="dark"><input type="radio" id="dark" name="background" value="dark" onclick="switchBackground('dark','light')" checked>dark background</label>
     <label for="light"><input type="radio" id="light" name="background" value="light" onclick="switchBackground('light','dark')">light background</label>
 
-    <div id="color-table"></div>
+    <div id="color-table" class="card-group"></div>
     <label for="group-size">From the colors you selected, you want the <select type="number" id="num-requested">
       <option value="2">2</option>
       <option value="3">3</option>
@@ -40,8 +39,8 @@
     <p>I calculate the difference between groups as the average of the differences between each color, that is, for two groups of three colors, I find the difference between the two first colors of each group, the difference between the two second colors, and the difference between the two third colors, and average them.</p>
     <p>You can weight the average by mucking around with the sliders. The further right you slide, the more important the difference between the colors in that position will be to the overall difference. If you're looking for difference between single colors/color groups of size 1, the weight doesn't matter but you can still muck around with the slider anyway.</p>
     <div id="weights-container"></div>
+    <p>I warn you now before you hit 'calculate': this can be slow and this can eat up a ton of memory. I've optimized it a bit (you can look at the code <a href="#">here</a> and yell at me if I haven't optimized it enough), and one day I'll move the heavy lifting server-side, but for now, performance can be bad. The way this works is from the colors you pick, I find all permutations of length whatever, and then I run farthest neighbor on them using color difference as the distance. The numbers get pretty big pretty fast; if you pick 10 colors and you want distinct groups of 7 colors, for example, I'm finding the most distinct out of six hundred thousand possible groups. If you go really crazy, pick every color, and ask for distinct groups of 10, that's most distinct groups out of six quintillion possibles.</p>
     <button onclick="calculateWrapper()">calculate</button>
     <div id="combos"></div>
-  </div>
 </body>
 </html>

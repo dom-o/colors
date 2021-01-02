@@ -27,6 +27,10 @@
   height: 55px;
 }
 
-.weight-slider {
+.weight-label {
   display: block;
+  text-align: right;
+  max-width: 27rem;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
 }
