@@ -1,14 +1,3 @@
-function arrCompare(a, b) {
-  var i;
-
-  for(i=0; i<a.length && i<b.length;) {
-    if (a[i] === b[i]) i++;
-    else return a[i]-b[i];
-  }
-
-  return 0;
-}
-
 function getColorCombos(color_list, num_requested, group_size, weights) {
   if(color_list.length < group_size) {
     return null
@@ -20,7 +9,7 @@ function getColorCombos(color_list, num_requested, group_size, weights) {
   //     return color_list.indexOf(color) === index;
   // });
 
-  var combo_list = permutationsNew(color_list.length, group_size);
+  var combo_list = permutations(color_list.length, group_size);
   const combo_list_length = factorial(color_list.length) / factorial(color_list.length - group_size)
   if(num_requested >= combo_list_length) {
     arr = []
@@ -33,20 +22,17 @@ function getColorCombos(color_list, num_requested, group_size, weights) {
   const min = Math.ceil(0)
   const max = Math.floor(combo_list_length)
   const rand = Math.floor(Math.random() * (max - min) + min)
-  for(var i=0;i<rand;i++) {
-    combo_list.next()
-  }
+  for(var i=0;i<rand;i++) { combo_list.next() }
   const to_return = [combo_list.next().value.map(x => color_list[x])]
-  const to_ignore = [to_return[0]]
 
   while(to_return.length < num_requested) {
     var furthest, combo
     let max_deltaE=0
 
-    combo_list = permutationsNew(color_list.length, group_size)
-    for(el of combo_list) {
+    combo_list = permutations(color_list.length, group_size)
+    for(const el of combo_list) {
       combo = el.map(x => color_list[x])
-      if(!to_ignore_includes_combo(combo, to_ignore)) {
+      if(!to_return_includes_combo(combo, to_return)) {
         let new_deltaE = group_deltaE_2000(to_return[0], combo, weights)
         for(var k=1; k<to_return.length; k++) {
           new_deltaE = Math.min(group_deltaE_2000(to_return[k], combo, weights), new_deltaE);
@@ -57,16 +43,15 @@ function getColorCombos(color_list, num_requested, group_size, weights) {
         }
       }
     }
-    to_ignore.push(furthest)
     to_return.push(furthest);
     max_deltaE = 0;
   }
   return to_return
 }
 
-function to_ignore_includes_combo(combo, to_ignore) {
+function to_return_includes_combo(combo, to_return) {
   var found;
-  for(compare of to_ignore) {
+  for(const compare of to_return) {
     if(compare.length === combo.length) {
       found = true
       for(var i=0; i<compare.length; i++) {
