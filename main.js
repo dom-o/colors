@@ -28,6 +28,12 @@ if(document.getElementById('dark').checked && !document.getElementById('light').
   switchBackground('light', 'dark')
 }
 
+function clearSelectedColors() {
+  for (const el of document.getElementsByClassName('color-check')) {
+    el.checked = false
+  }
+}
+
 function changeWeights() {
   const weights_quantity = document.getElementById('group-size').value
   const weights_container = document.getElementById('weights-container')
@@ -48,7 +54,7 @@ function changeWeights() {
     weights_container.appendChild(label)
   }
 }
-changeWeights()
+window.onload = changeWeights
 
 function calculateWrapper() {
   document.getElementById('combos').innerHTML = '..calculating'
@@ -67,7 +73,7 @@ function calculate() {
 
   const weights_quantity = parseInt(document.getElementById('group-size').value, 10)
   if(on.length < weights_quantity) {
-    document.getElementById('combos').innerHTML = 'You want color groups of size ' + weights_quantity + ", but you've picked "+on.length+(on.length!=1 ? ' colors.' : ' color.')+' Pick '+(weights_quantity-on.length)+' more.'
+    document.getElementById('combos').innerHTML = 'You want color groups of size ' + weights_quantity + ", but you've picked "+on.length+(on.length!=1 ? ' colors.' : ' color.')+' Pick '+(weights_quantity-on.length)+' more at least.'
     return
   }
   const num_requested = parseInt(document.getElementById('num-requested').value, 10)
