@@ -1,20 +1,5 @@
 const card_height = 55
-
-// function genColorTable() {
-//   const color_table = document.getElementById('color-table')
-//
-//   let color_table_html = ''
-//   for(let i=0; i<hex_list.length; i++) {
-//     const color = hex_list[i]
-//     color_table_html +=
-//       '<label class="card" for="'+i+'" style="background-color:'+color+';">' +
-//         '<input id="'+i+'" class="color-check" type="checkbox">' +
-//         '<span class="dark">'+color+'</span>' +
-//       '</label>'
-//   }
-//   color_table.innerHTML = color_table_html
-// }
-// genColorTable()
+var worker
 
 function switchBackground(to, from) {
   const els = document.getElementsByClassName(from)
@@ -63,6 +48,15 @@ function calculateWrapper() {
   }, 20);
 }
 
+function cancelCalculation() {
+  if(worker) {
+    worker.terminate()
+    worker = null
+    document.getElementById('calculate').disabled = false
+    document.getElementById('combos').innerHTML = 'Calculation cancelled.'
+  }
+}
+
 function calculate() {
   const on = []
   for (const el of document.getElementsByClassName('color-check')) {
@@ -76,6 +70,8 @@ function calculate() {
     document.getElementById('combos').innerHTML = 'You want color groups of size ' + weights_quantity + ", but you've picked "+on.length+(on.length!=1 ? ' colors.' : ' color.')+' Pick '+(weights_quantity-on.length)+' more at least.'
     return
   }
+
+  document.getElementById('calculate').disabled = true
   const num_requested = parseInt(document.getElementById('num-requested').value, 10)
 
   const weights = []
@@ -88,7 +84,7 @@ function calculate() {
     }
   }
 
-  var worker = new Worker("colors.js")
+  worker = new Worker("colors.js")
   worker.onmessage = updateColorTable;
 
   worker.postMessage({
@@ -100,23 +96,29 @@ function calculate() {
 }
 
 function updateColorTable(event) {
-  var combos = event.data
-  if(combos) {
-    // combos = combos.map(combo => combo.map(color => color.hex))
-    const combo_table = document.getElementById('combos')
-    let combos_html = '<div class="card-group">'
-    for(let i=0; i<combos.length; i++) {
-      combos_html += '<div class="card" style="width: 3rem;">'
-        for(let j=0; j<combos[i].length; j++) {
-          combos_html += '<div class="square" style="background-color:'+combos[i][j].hex+
-          '; height:'+ (card_height / combos[i].length) +'px;'+
-          '"></div>'
-        }
+  var message = event.data
+  if(message.type == "combo_list") {
+    var combos = message.data
+    if(combos) {
+      // combos = combos.map(combo => combo.map(color => color.hex))
+      const combo_table = document.getElementById('combos')
+      let combos_html = '<div class="card-group">'
+      for(let i=0; i<combos.length; i++) {
+        combos_html += '<div class="card" style="width: 3rem;">'
+          for(let j=0; j<combos[i].length; j++) {
+            combos_html += '<div class="square" style="background-color:'+combos[i][j].hex+
+            '; height:'+ (card_height / combos[i].length) +'px;'+
+            '"></div>'
+          }
+        combos_html += '</div>'
+      }
       combos_html += '</div>'
+      combo_table.innerHTML = combos_html
+    } else {
+      document.getElementById('combos').innerHTML = "Something's up. I couldn't find the color groups."
     }
-    combos_html += '</div>'
-    combo_table.innerHTML = combos_html
-  } else {
-    document.getElementById('combos').innerHTML = "Something's up. I couldn't find the color groups."
+    document.getElementById('calculate').disabled = false
+  } else if (message.type == "progress") {
+    document.getElementById('combos').innerHTML = '..calculating ' + message.data+'%'
   }
 }

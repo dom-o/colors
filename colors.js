@@ -1,7 +1,10 @@
 importScripts('color_data.js')
 
 onmessage = function(event) {
-  postMessage(getColorCombos(event.data.color_list, event.data.num_requested, event.data.group_size, event.data.weights))
+  postMessage({
+    type:'combo_list',
+    data: getColorCombos(event.data.color_list, event.data.num_requested, event.data.group_size, event.data.weights)
+  })
 }
 
 function getColorCombos(color_list, num_requested, group_size, weights) {
@@ -24,8 +27,9 @@ function getColorCombos(color_list, num_requested, group_size, weights) {
   })
 
   var combo_list
+  var combo_list_length = factorial(color_list.length) / factorial(color_list.length - group_size)
   //can't get length of permutations list directly, since it's a generator, but know that there are n!/(n-k)! length k permutations of n items
-  if(num_requested >= factorial(color_list.length) / factorial(color_list.length - group_size)) {
+  if(num_requested >= combo_list_length) {
     combo_list = permutations(color_list.length, group_size);
     const arr = []
     for (const combo of combo_list) {
@@ -43,12 +47,14 @@ function getColorCombos(color_list, num_requested, group_size, weights) {
     to_ignore[0].push(i)
   }
   const to_return = [color_list.slice(color_list.length-group_size)]
-
+  console.log(combo_list_length)
   while(to_return.length < num_requested) {
-    var furthest, furthest_indices, combo, possible, max_deltaE=0
+    var furthest, furthest_indices, combo, possible, max_deltaE=0, progress = 1
 
     combo_list = permutations(color_list.length, group_size)
     for(const el of combo_list) {
+      postMessage({ type: 'progress', data: 100*((to_return.length-1) / num_requested) + ((100 / (num_requested-1))* (progress / combo_list_length)) })
+      progress++
       if(!to_return_includes_combo(el, to_ignore)) {
         combo = el.map(x => color_list[x])
         var new_deltaE = group_deltaE_2000(to_return[0], combo, weights)
