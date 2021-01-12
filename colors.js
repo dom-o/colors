@@ -1,3 +1,9 @@
+importScripts('color_data.js')
+
+onmessage = function(event) {
+  postMessage(getColorCombos(event.data.color_list, event.data.num_requested, event.data.group_size, event.data.weights))
+}
+
 function getColorCombos(color_list, num_requested, group_size, weights) {
   if(color_list.length < group_size) {
     return null
@@ -11,10 +17,9 @@ function getColorCombos(color_list, num_requested, group_size, weights) {
 
   //convert color list from [hex_list_index1, hex_list_index2, ...] to [ { rgb:[r,g,b], lab:[l,a,b] }, { rgb:[r,g,b], lab:[l,a,b] }, ...]
   color_list = color_list.map(a => {
-    const rgb = hex_to_rgb(hex_list[a])
     return {
-      lab: xyz_to_lab(srgb_to_xyz(rgb)),
-      rgb: rgb
+      lab: lab_list[a],
+      hex: hex_list[a]
     }
   })
 
@@ -40,7 +45,7 @@ function getColorCombos(color_list, num_requested, group_size, weights) {
   const to_return = [color_list.slice(color_list.length-group_size)]
 
   while(to_return.length < num_requested) {
-    var furthest, furthest_indices, combo, max_deltaE=0
+    var furthest, furthest_indices, combo, possible, max_deltaE=0
 
     combo_list = permutations(color_list.length, group_size)
     for(const el of combo_list) {
@@ -48,7 +53,8 @@ function getColorCombos(color_list, num_requested, group_size, weights) {
         combo = el.map(x => color_list[x])
         var new_deltaE = group_deltaE_2000(to_return[0], combo, weights)
         for(var k=1; k<to_return.length; k++) {
-          new_deltaE = Math.min(group_deltaE_2000(to_return[k], combo, weights), new_deltaE);
+          possible = group_deltaE_2000(to_return[k], combo, weights)
+          new_deltaE = (possible < new_deltaE) ? possible : new_deltaE//Math.min(group_deltaE_2000(to_return[k], combo, weights), new_deltaE);
         }
         if(new_deltaE > max_deltaE) {
           max_deltaE = new_deltaE;
@@ -300,10 +306,6 @@ function toRadians(degrees) {
 
 function toDegrees(radians) {
     return radians * 180/Math.PI;
-}
-
-function srgb_to_lab(rgb) {
-    return xyz_to_lab(srgb_to_xyz(rgb));
 }
 
 //https://en.wikipedia.org/wiki/Lab_color_space#Forward_transformation
