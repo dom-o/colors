@@ -39,7 +39,7 @@ function changeWeights() {
 window.onload = changeWeights
 
 function calculateWrapper() {
-  document.getElementById('combos').innerHTML = '..calculating'
+  document.getElementById('combos-text').innerHTML = '..calculating'
   setTimeout(function() {
     calculate()
   }, 20);
@@ -50,7 +50,7 @@ function cancelCalculation() {
     worker.terminate()
     worker = null
     document.getElementById('calculate').disabled = false
-    document.getElementById('combos').innerHTML = 'Calculation cancelled.'
+    document.getElementById('combos-text').innerHTML = 'Calculation cancelled.'
   }
 }
 
@@ -64,7 +64,7 @@ function calculate() {
 
   const weights_quantity = parseInt(document.getElementById('group-size').value, 10)
   if(on.length < weights_quantity) {
-    document.getElementById('combos').innerHTML = 'You want color groups of size ' + weights_quantity + ", but you've picked "+on.length+(on.length!=1 ? ' colors.' : ' color.')+' Pick '+(weights_quantity-on.length)+' more at least.'
+    document.getElementById('combos-text').innerHTML = 'You want color groups of size ' + weights_quantity + ", but you've picked "+on.length+(on.length!=1 ? ' colors.' : ' color.')+' Pick '+(weights_quantity-on.length)+' more at least.'
     return
   }
 
@@ -110,11 +110,12 @@ function updateColorTable(event) {
       }
       combos_html += '</div>'
       combo_table.innerHTML = combos_html
+      document.getElementById('combos-text').innerHTML = ''
     } else {
-      document.getElementById('combos').innerHTML = "Something's up. I couldn't find the color groups."
+      document.getElementById('combos-text').innerHTML = "Something's up. I couldn't find the color groups."
     }
     document.getElementById('calculate').disabled = false
   } else if (message.type == "progress") {
-    document.getElementById('combos').innerHTML = '..calculating ' + message.data+'%'
+    document.getElementById('combos-text').innerHTML = '..calculating ' + message.data+'%'
   }
 }
