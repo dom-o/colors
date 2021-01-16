@@ -47,20 +47,17 @@ function getColorCombos(color_list, num_requested, group_size, weights) {
     to_ignore[0].push(i)
   }
   const to_return = [color_list.slice(color_list.length-group_size)]
-  console.log(combo_list_length)
   while(to_return.length < num_requested) {
-    var furthest, furthest_indices, combo, possible, max_deltaE=0, progress = 1
-
+    var furthest, furthest_indices, combo, possible, max_deltaE=0
+    postMessage({ type: 'progress', data: 100*((to_return.length) / num_requested) })
     combo_list = permutations(color_list.length, group_size)
     for(const el of combo_list) {
-      postMessage({ type: 'progress', data: 100*((to_return.length-1) / num_requested) + ((100 / (num_requested-1))* (progress / combo_list_length)) })
-      progress++
       if(!to_return_includes_combo(el, to_ignore)) {
         combo = el.map(x => color_list[x])
         var new_deltaE = group_deltaE_2000(to_return[0], combo, weights)
         for(var k=1; k<to_return.length; k++) {
           possible = group_deltaE_2000(to_return[k], combo, weights)
-          new_deltaE = (possible < new_deltaE) ? possible : new_deltaE//Math.min(group_deltaE_2000(to_return[k], combo, weights), new_deltaE);
+          new_deltaE = (possible < new_deltaE) ? possible : new_deltaE
         }
         if(new_deltaE > max_deltaE) {
           max_deltaE = new_deltaE;
@@ -94,13 +91,8 @@ function to_return_includes_combo(combo, to_return) {
 
 function group_deltaE_2000(group1, group2, weights) {
   const summed_weights = weights.reduce((acc,curr) => acc+curr)
-  // const lab_group1 = group1.map(color => srgb_to_lab(color))
-  // const lab_group2 = group2.map(color => srgb_to_lab(color))
   let avg_deltaE = 0
 
-  // for(let i=0; i<lab_group1.length && i<lab_group2.length; i++) {
-  //   avg_deltaE += deltaE_2000(lab_group1[i], lab_group2[i]) * weights[i]
-  // }
   for(let i=0; i<group1.length && i<group2.length; i++) {
     avg_deltaE += deltaE_2000(group1[i].lab, group2[i].lab) * weights[i]
   }
@@ -239,69 +231,69 @@ function* permutations(n/**list_length**/, k/**chunk_size**/) {
 //http://www.brucelindbloom.com/index.html?Eqn_DeltaE_CIE2000.html
 //referenced https://github.com/signalwerk/colorlab/blob/master/src/CIEDE2000.js
 function deltaE_2000(color1, color2) {
-    var l1, a1, b1, l2, a2, b2, lBarPrime, c1, c2, cBar, g, a1Prime, a2Prime, c1Prime, c2Prime, cBarPrime, h1Prime, h1PrimeTerm, h2Prime, h2PrimeTerm, hBarPrime, deltaHPrime, deltaHPrimeTerm, deltaLPrime, deltaCPrime, deltaBigHPrime, sL, sC, sH, t, deltaTheta, rC, rT, kL, kC, kH;
+    // var l1, a1, b1, l2, a2, b2, lBarPrime, c1, c2, cBar, g, a1Prime, a2Prime, c1Prime, c2Prime, cBarPrime, h1Prime, h1PrimeTerm, h2Prime, h2PrimeTerm, hBarPrime, deltaHPrime, deltaHPrimeTerm, deltaLPrime, deltaCPrime, deltaBigHPrime, sL, sC, sH, t, deltaTheta, rC, rT, kL, kC, kH;
 
-    l1= color1[0];
-    a1= color1[1];
-    b1= color1[2];
-    l2= color2[0];
-    a2= color2[1];
-    b2= color2[2];
+    var l1= color1[0];
+    var a1= color1[1];
+    var b1= color1[2];
+    var l2= color2[0];
+    var a2= color2[1];
+    var b2= color2[2];
 
 
-    lBarPrime = (l1+l2) /2;
+    var lBarPrime = (l1+l2) /2;
 
     //c is the chroma for each color
-    c1 = Math.sqrt(Math.pow(a1, 2) + Math.pow(b1, 2));
-    c2 = Math.sqrt(Math.pow(a2, 2) + Math.pow(b2, 2));
+    var c1 = Math.sqrt(Math.pow(a1, 2) + Math.pow(b1, 2));
+    var c2 = Math.sqrt(Math.pow(a2, 2) + Math.pow(b2, 2));
 
     //average the two chromas
-    cBar = (c1 + c2)/2;
+    var cBar = (c1 + c2)/2;
 
-    g = 0.5 * (1-Math.sqrt( Math.pow(cBar,7) / (Math.pow(cBar,7) + Math.pow(25,7)) ));
+    var g = 0.5 * (1-Math.sqrt( Math.pow(cBar,7) / (Math.pow(cBar,7) + Math.pow(25,7)) ));
 
-    a1Prime = a1*(1+g);
-    a2Prime = a2*(1+g);
+    var a1Prime = a1*(1+g);
+    var a2Prime = a2*(1+g);
 
-    c1Prime = Math.sqrt( Math.pow(a1Prime,2) + Math.pow(b1,2) );
-    c2Prime = Math.sqrt( Math.pow(a2Prime,2) + Math.pow(b2,2) );
-    cBarPrime = (c1Prime+c2Prime) /2;
+    var c1Prime = Math.sqrt( Math.pow(a1Prime,2) + Math.pow(b1,2) );
+    var c2Prime = Math.sqrt( Math.pow(a2Prime,2) + Math.pow(b2,2) );
+    var cBarPrime = (c1Prime+c2Prime) /2;
 
-    h1PrimeTerm = toDegrees(Math.atan2(b1, a1Prime));
-    h1Prime = (h1PrimeTerm >= 0) ? h1PrimeTerm : h1PrimeTerm + 360;
+    var h1PrimeTerm = toDegrees(Math.atan2(b1, a1Prime));
+    var h1Prime = (h1PrimeTerm >= 0) ? h1PrimeTerm : h1PrimeTerm + 360;
 
-    h2PrimeTerm = toDegrees(Math.atan2(b2, a2Prime));
-    h2Prime = (h2PrimeTerm >= 0) ? h2PrimeTerm : h2PrimeTerm + 360;
+    var h2PrimeTerm = toDegrees(Math.atan2(b2, a2Prime));
+    var h2Prime = (h2PrimeTerm >= 0) ? h2PrimeTerm : h2PrimeTerm + 360;
 
-    hBarPrime = (Math.abs(h1Prime - h2Prime) > 180) ? (h1Prime + h2Prime + 360)/2 : (h1Prime + h2Prime)/2;
+    var hBarPrime = (Math.abs(h1Prime - h2Prime) > 180) ? (h1Prime + h2Prime + 360)/2 : (h1Prime + h2Prime)/2;
 
-    t = 1 - (0.17*Math.cos(toRadians(hBarPrime - 30))) + (0.24*Math.cos(toRadians(2*hBarPrime))) + (0.32*Math.cos(toRadians(3*hBarPrime + 6))) - (0.20*Math.cos(toRadians(4*hBarPrime - 63)));
+    var t = 1 - (0.17*Math.cos(toRadians(hBarPrime - 30))) + (0.24*Math.cos(toRadians(2*hBarPrime))) + (0.32*Math.cos(toRadians(3*hBarPrime + 6))) - (0.20*Math.cos(toRadians(4*hBarPrime - 63)));
 
     //delta for hue
-    deltaHPrimeTerm = h2Prime - h1Prime;
-    if(Math.abs(deltaHPrimeTerm) <= 180) { deltaHPrime= deltaHPrimeTerm; }
-    else if(Math.abs(deltaHPrimeTerm) > 180 && h2Prime <= h1Prime) { deltaHPrime= deltaHPrimeTerm - 360; }
-    else { deltaHPrime= deltaHPrimeTerm + 360; }
+    var deltaHPrimeTerm = h2Prime - h1Prime;
+    if(Math.abs(deltaHPrimeTerm) <= 180) { var deltaHPrime= deltaHPrimeTerm; }
+    else if(Math.abs(deltaHPrimeTerm) > 180 && h2Prime <= h1Prime) { var deltaHPrime= deltaHPrimeTerm - 360; }
+    else { var deltaHPrime= deltaHPrimeTerm + 360; }
 
     //delta for lightness
-    deltaLPrime= l2 - l1;
+    var deltaLPrime= l2 - l1;
     //delta for chroma
-    deltaCPrime= c2Prime - c1Prime;
+    var deltaCPrime= c2Prime - c1Prime;
 
-    deltaBigHPrime= 2 * Math.sqrt(c1Prime*c2Prime) * Math.sin(toRadians(deltaHPrime/2));
+    var deltaBigHPrime= 2 * Math.sqrt(c1Prime*c2Prime) * Math.sin(toRadians(deltaHPrime/2));
 
-    sL= 1 + ((0.015 * Math.pow(lBarPrime-50,2)) / (Math.sqrt(20 + Math.pow(lBarPrime-50,2))));
-    sC= 1 + (0.045*cBarPrime);
-    sH= 1 + (0.015*cBarPrime*t);
+    var sL= 1 + ((0.015 * Math.pow(lBarPrime-50,2)) / (Math.sqrt(20 + Math.pow(lBarPrime-50,2))));
+    var sC= 1 + (0.045*cBarPrime);
+    var sH= 1 + (0.015*cBarPrime*t);
 
-    deltaTheta= 30*Math.exp(-1*Math.pow((hBarPrime-275)/25,2));
+    var deltaTheta= 30*Math.exp(-1*Math.pow((hBarPrime-275)/25,2));
 
-    rC= 2 * Math.sqrt( Math.pow(cBarPrime,7) / (Math.pow(cBarPrime,7) + Math.pow(25,7)) );
-    rT= -1*rC*Math.sin(toRadians(2*deltaTheta));
+    var rC= 2 * Math.sqrt( Math.pow(cBarPrime,7) / (Math.pow(cBarPrime,7) + Math.pow(25,7)) );
+    var rT= -1*rC*Math.sin(toRadians(2*deltaTheta));
 
-    kL= 1;
-    kC= 1;
-    kH= 1;
+    var kL= 1;
+    var kC= 1;
+    var kH= 1;
 
     return Math.sqrt( Math.pow(deltaLPrime/(kL*sL),2) + Math.pow(deltaCPrime/(kC*sC),2) + Math.pow(deltaBigHPrime/(kH*sH),2) + (rT*(deltaCPrime/(kC*sC))*(deltaBigHPrime/(kH*sH))));
 }
