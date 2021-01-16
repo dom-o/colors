@@ -1,16 +1,13 @@
 const card_height = 55
 var worker
 
-function switchBackground(to, from) {
-  const els = document.getElementsByClassName(from)
-  while (els.length>0) {
-    els[0].className = to
-  }
+function switchBackground(to) {
+  document.body.className = to
 }
 if(document.getElementById('dark').checked && !document.getElementById('light').checked) {
-  switchBackground('dark', 'light')
+  switchBackground('dark')
 } else {
-  switchBackground('light', 'dark')
+  switchBackground('light')
 }
 
 function clearSelectedColors() {
@@ -26,7 +23,7 @@ function changeWeights() {
   for(let i=0; i<weights_quantity; i++) {
     let label = document.createElement('label')
     label.htmlFor = 'contrast'+i
-    label.innerHTML = 'Weight for '+['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth'][i]+' color: '
+    label.innerHTML = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth'][i]+' color: '
     label.className = 'weight-label'
     let input = document.createElement('input')
     input.type= 'range'
@@ -100,15 +97,14 @@ function updateColorTable(event) {
   if(message.type == "combo_list") {
     var combos = message.data
     if(combos) {
-      // combos = combos.map(combo => combo.map(color => color.hex))
       const combo_table = document.getElementById('combos')
-      let combos_html = '<div class="card-group">'
+      const span_color = (document.getElementById('dark').checked && !document.getElementById('light').checked) ? 'dark' : 'light'
+      let combos_html = '<div class="combo-group">'
       for(let i=0; i<combos.length; i++) {
-        combos_html += '<div class="card" style="width: 3rem;">'
+        combos_html += '<div class="card combo-card">'
           for(let j=0; j<combos[i].length; j++) {
-            combos_html += '<div class="square" style="background-color:'+combos[i][j].hex+
-            '; height:'+ (card_height / combos[i].length) +'px;'+
-            '"></div>'
+            combos_html += '<div class="square combo-square" style="background-color:'+combos[i][j].hex+
+            ';"><span class="'+span_color+'">'+combos[i][j].hex+'</span></div>'
           }
         combos_html += '</div>'
       }
