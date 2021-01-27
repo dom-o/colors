@@ -81,7 +81,7 @@ function calculate() {
     }
   }
 
-  worker = new Worker("colors.js")
+  worker = new Worker("worker.js")
   worker.onmessage = updateColorTable;
 
   worker.postMessage({
@@ -103,8 +103,8 @@ function updateColorTable(event) {
       for(let i=0; i<combos.length; i++) {
         combos_html += '<div class="card combo-card">'
           for(let j=0; j<combos[i].length; j++) {
-            combos_html += '<div class="square combo-square" style="background-color:'+combos[i][j].hex+
-            ';"><span class="'+span_color+'">'+combos[i][j].hex+'</span></div>'
+            combos_html += '<div class="square combo-square" style="background-color:'+combos[i][j]+
+            ';"><span class="'+span_color+'">'+combos[i][j]+'</span></div>'
           }
         combos_html += '</div>'
       }
