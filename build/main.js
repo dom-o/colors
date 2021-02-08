@@ -1,4 +1,3 @@
-const card_height = 55
 var worker
 
 function switchBackground(to) {

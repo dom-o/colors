@@ -6,12 +6,15 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="dark">
-<div id="container">
 <div id="content">
-  <h1>This is a tool for finding distinct colors/groups of colors.</h1>
   <label for="dark"><input type="radio" id="dark" name="background" value="dark" onclick="switchBackground('dark')" checked>dark background</label>
   <label for="light"><input type="radio" id="light" name="background" value="light" onclick="switchBackground('light')">light background</label>
-
+  <h1>This is a tool for finding distinct colors/groups of colors.</h1>
+  <p>I made this for myself when I was head routesetter at a climbing wall. We had climbs on the wall, and we marked which holds belonged to each climb with colored tape. Sometimes one of the routesetters would mark two adjacent climbs with colors that were hard to tell apart.
+  </p>
+  <p>Using this tool, I picked all the tape colors we had, and I said, "Well, we mark every climb with two colors, a main and a tail, and I figure the main color is more important for distinction than the tail color." So I picked groups of size 2, and I weighted the first color more than the second. Then I had a list of the tape colors that were the most distinct from each other, and as long as we stuck to those colors, we knew it would be easy to tell climbs apart.
+  </p>
+  <h3>Pick some colors.</h3>
   <div id="color-table" class="card-group">
     <label class="card" for="0" style="background-color:#FFFFFF;">
       <div class="square">
@@ -53,10 +56,6 @@
   <button onclick="cancelCalculation()">cancel calculation</button>
   <p id="combos-text"></p>
   <div id="combos"></div>
-</div>
-<footer style="width:100%; padding:1rem 2rem; margin-top:2rem; background-color:black; color:#fff;">
-  <small>Made by </small><a style="color:yellow;" href="https://domonicmilesi.com/">Domonic Milesi</a>
-</footer>
 </div>
 </body>
 </html>
