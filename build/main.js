@@ -124,3 +124,5 @@ function updateColorTable(event) {
 document.getElementById('calculate').onclick = calculateWrapper
 document.getElementById('cancel').onclick = cancelCalculation
 document.getElementById('clear').onclick = clearSelectedColors
+document.getElementById('group-size').onchange = changeWeights
+document.getElementById('group-size').onkeyup = changeWeights
