@@ -8,6 +8,8 @@ if(document.getElementById('dark').checked && !document.getElementById('light').
 } else {
   switchBackground('light')
 }
+document.getElementById('dark').onclick = function() { switchBackground('dark') }
+document.getElementById('light').onclick = function() { switchBackground('light') }
 
 function clearSelectedColors() {
   for (const el of document.getElementsByClassName('color-check')) {
@@ -118,3 +120,7 @@ function updateColorTable(event) {
     document.getElementById('combos-text').innerHTML = '..calculating ' + message.data+'%'
   }
 }
+
+document.getElementById('calculate').onclick = calculateWrapper
+document.getElementById('cancel').onclick = cancelCalculation
+document.getElementById('clear').onclick = clearSelectedColors
