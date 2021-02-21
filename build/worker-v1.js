@@ -1,4 +1,4 @@
-importScripts('data.js')
+importScripts('data-v1.js')
 
 onmessage = function(event) {
   postMessage({
