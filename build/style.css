@@ -24,6 +24,12 @@ h1, p, h3 {
   max-width: 45rem;
 }
 
+#backlink {
+  margin: 1rem;
+}
+#clear {
+  display:block;
+}
 #combos {
   min-height: 15rem;
 }
@@ -102,3 +108,85 @@ h1, p, h3 {
   margin-top: 0.5em;
   margin-bottom: 0.5em;
 }
+
+label[for="0"] { background-color: #FFFFFF; }
+label[for="1"] { background-color: #000000; }
+label[for="2"] { background-color: #333333; }
+label[for="3"] { background-color: #666666; }
+label[for="4"] { background-color: #999999; }
+label[for="5"] { background-color: #CCCCCC; }
+label[for="6"] { background-color: #CCCC99; }
+label[for="7"] { background-color: #9999CC; }
+label[for="8"] { background-color: #666699; }
+label[for="9"] { background-color: #660000; }
+label[for="10"] { background-color: #663300; }
+label[for="11"] { background-color: #996633; }
+label[for="12"] { background-color: #003300; }
+label[for="13"] { background-color: #003333; }
+label[for="14"] { background-color: #003399; }
+label[for="15"] { background-color: #000066; }
+label[for="16"] { background-color: #330066; }
+label[for="17"] { background-color: #660066; }
+label[for="18"] { background-color: #990000; }
+label[for="19"] { background-color: #993300; }
+label[for="20"] { background-color: #CC9900; }
+label[for="21"] { background-color: #006600; }
+label[for="22"] { background-color: #336666; }
+label[for="23"] { background-color: #0033FF; }
+label[for="24"] { background-color: #000099; }
+label[for="25"] { background-color: #660099; }
+label[for="26"] { background-color: #990066; }
+label[for="27"] { background-color: #CC0000; }
+label[for="28"] { background-color: #CC3300; }
+label[for="29"] { background-color: #FFCC00; }
+label[for="30"] { background-color: #009900; }
+label[for="31"] { background-color: #006666; }
+label[for="32"] { background-color: #0066FF; }
+label[for="33"] { background-color: #0000CC; }
+label[for="34"] { background-color: #663399; }
+label[for="35"] { background-color: #CC0099; }
+label[for="36"] { background-color: #FF0000; }
+label[for="37"] { background-color: #FF3300; }
+label[for="38"] { background-color: #FFFF00; }
+label[for="39"] { background-color: #00CC00; }
+label[for="40"] { background-color: #009999; }
+label[for="41"] { background-color: #0099FF; }
+label[for="42"] { background-color: #0000FF; }
+label[for="43"] { background-color: #9900CC; }
+label[for="44"] { background-color: #FF0099; }
+label[for="45"] { background-color: #CC3333; }
+label[for="46"] { background-color: #FF6600; }
+label[for="47"] { background-color: #FFFF33; }
+label[for="48"] { background-color: #00FF00; }
+label[for="49"] { background-color: #00CCCC; }
+label[for="50"] { background-color: #00CCFF; }
+label[for="51"] { background-color: #3366FF; }
+label[for="52"] { background-color: #9933FF; }
+label[for="53"] { background-color: #FF00FF; }
+label[for="54"] { background-color: #FF6666; }
+label[for="55"] { background-color: #FF6633; }
+label[for="56"] { background-color: #FFFF66; }
+label[for="57"] { background-color: #66FF66; }
+label[for="58"] { background-color: #66CCCC; }
+label[for="59"] { background-color: #00FFFF; }
+label[for="60"] { background-color: #3399FF; }
+label[for="61"] { background-color: #9966FF; }
+label[for="62"] { background-color: #FF66FF; }
+label[for="63"] { background-color: #FF9999; }
+label[for="64"] { background-color: #FF9966; }
+label[for="65"] { background-color: #FFFF99; }
+label[for="66"] { background-color: #99FF99; }
+label[for="67"] { background-color: #66FFCC; }
+label[for="68"] { background-color: #99FFFF; }
+label[for="69"] { background-color: #66CCFF; }
+label[for="70"] { background-color: #9999FF; }
+label[for="71"] { background-color: #FF99FF; }
+label[for="72"] { background-color: #FFCCCC; }
+label[for="73"] { background-color: #FFCC99; }
+label[for="74"] { background-color: #FFFFCC; }
+label[for="75"] { background-color: #CCFFCC; }
+label[for="76"] { background-color: #99FFCC; }
+label[for="77"] { background-color: #CCFFFF; }
+label[for="78"] { background-color: #99CCFF; }
+label[for="79"] { background-color: #CCCCFF; }
+label[for="80"] { background-color: #FFCCFF; }
