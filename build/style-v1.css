@@ -10,6 +10,9 @@ h1, p, h3 {
 header {
   margin: 1rem;
 }
+a:link {
+  border-bottom: .1em solid;
+}
 
 #clear {
   display:block;
@@ -45,25 +48,30 @@ header {
   color: #FBFBFB;
   border: solid thin #FBFBFB;
 }
-.dark a {
-  color:yellow;
+.dark a:link {
+  color: #0095F8;
 }
 .dark a:visited {
-  color: darkorange;
+  color: #8383FF;
 }
 .dark a:hover, .dark a:active {
   color: #0f0f0f;
-  background-color: yellow;
+  background-color: #0095F8;
 }
 .dark a:visited:hover, .dark a:visited:active {
-  background-color: darkorange;
+  background-color: #8383FF;
 }
 
 .light {
   background-color: #FBFBFB;
   color: #0f0f0f;
 }
-.light a{
+.light span{
+  background-color: #FBFBFB;
+  color: #0f0f0f;
+  border: solid thin #0f0f0f;
+}
+.light a:link{
   color:blue;
 }
 .light a:visited {
@@ -75,11 +83,6 @@ header {
 }
 .light a:visited:hover, .light a:visited:active {
   background-color: indigo;
-}
-.light span{
-  background-color: #FBFBFB;
-  color: #0f0f0f;
-  border: solid thin #0f0f0f;
 }
 
 .card-group {
