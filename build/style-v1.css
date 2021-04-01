@@ -10,6 +10,7 @@ h1, p, h3 {
 header {
   margin: 1rem;
 }
+
 #clear {
   display:block;
 }
@@ -44,10 +45,36 @@ header {
   color: #FBFBFB;
   border: solid thin #FBFBFB;
 }
+.dark a {
+  color:yellow;
+}
+.dark a:visited {
+  color: darkorange;
+}
+.dark a:hover, .dark a:active {
+  color: #0f0f0f;
+  background-color: yellow;
+}
+.dark a:visited:hover, .dark a:visited:active {
+  background-color: darkorange;
+}
 
 .light {
   background-color: #FBFBFB;
   color: #0f0f0f;
+}
+.light a{
+  color:blue;
+}
+.light a:visited {
+  color: indigo;
+}
+.light a:hover, .light a:active {
+  color: #FBFBFB;
+  background-color: blue;
+}
+.light a:visited:hover, .light a:visited:active {
+  background-color: indigo;
 }
 .light span{
   background-color: #FBFBFB;
