@@ -40,49 +40,51 @@ a:link {
 }
 
 .dark {
-  background-color: #0f0f0f;
   color: #FBFBFB;
+  background-color: #0f0f0f;
 }
 .dark span {
-  background-color: #0f0f0f;
   color: #FBFBFB;
+  background-color: #0f0f0f;
   border: solid thin #FBFBFB;
 }
 .dark a:link {
-  color: #0095F8;
+  color: #FBFBFB;
 }
 .dark a:visited {
-  color: #8383FF;
+  color: #b3b3b3;
 }
 .dark a:hover, .dark a:active {
   color: #0f0f0f;
-  background-color: #0095F8;
+  background-color: #FBFBFB;
 }
 .dark a:visited:hover, .dark a:visited:active {
-  background-color: #8383FF;
+  color: #0f0f0f;
+  background-color: #b3b3b3;
 }
 
 .light {
-  background-color: #FBFBFB;
   color: #0f0f0f;
+  background-color: #FBFBFB;
 }
 .light span{
-  background-color: #FBFBFB;
   color: #0f0f0f;
+  background-color: #FBFBFB;
   border: solid thin #0f0f0f;
 }
 .light a:link{
-  color:blue;
+  color:#0f0f0f;
 }
 .light a:visited {
-  color: indigo;
+  color: #4c4c4c;
 }
 .light a:hover, .light a:active {
   color: #FBFBFB;
-  background-color: blue;
+  background-color: #0f0f0f;
 }
 .light a:visited:hover, .light a:visited:active {
-  background-color: indigo;
+  color: #FBFBFB;
+  background-color: #4c4c4c;
 }
 
 .card-group {
